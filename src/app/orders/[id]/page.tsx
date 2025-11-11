@@ -22,7 +22,8 @@ export default function OrderDetailsPage() {
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const data = await ordersApi.getOrder(id)
+        const orderId = Array.isArray(id) ? id[0] : id
+        const data = await ordersApi.getOrder(orderId)
         setOrder(data)
       } catch (err: any) {
         setError(err?.message || 'Failed to fetch order')
