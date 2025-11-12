@@ -51,6 +51,7 @@ export interface Order {
 }
 
 export interface User {
+  auth_provider: string
   id: string
   email: string
   full_name: string

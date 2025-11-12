@@ -1,23 +1,22 @@
-
 // CartPage.tsx
 'use client'
 
-import { useEffect } from 'react'
-import { Trash2, Plus, Minus, ShoppingBag, Loader2, ArrowLeft, Leaf, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Trash2, Plus, Minus, ShoppingBag, Loader2, ArrowLeft, Leaf, X, MapPin, Info } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useCartStore } from '@/src/stores/cartStore'
 import { useAuthStore } from '@/src/stores/authStore'
-
+import { nigerianStates, calculateDeliveryFee } from '@/src/lib/utils/states'
 import Navbar from '@/src/components/layout/Navbar'
 import Footer from '@/src/components/layout/Footer'
 import { useRouter } from 'next/navigation'
-
 
 export default function CartPage() {
   const { items, loading, fetchCart, updateQuantity, removeItem, getCartTotal, clearCart } = useCartStore()
   const { isAuthenticated } = useAuthStore()
   const router = useRouter()
+  const [selectedState, setSelectedState] = useState('')
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -27,9 +26,7 @@ export default function CartPage() {
     fetchCart()
   }, [isAuthenticated])
 
-  const total = getCartTotal()
-  const shippingFee = total >= 5000 ? 0 : 1500
-  const finalTotal = total + shippingFee
+  const subtotal = getCartTotal()
 
   if (loading) {
     return (
@@ -195,39 +192,46 @@ export default function CartPage() {
                   Order Summary
                 </h2>
 
+                {/* Delivery Information Notice */}
+                <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-emerald-50 rounded-xl border-2 border-blue-200">
+                  <div className="flex items-start gap-3">
+                    <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <h3 className="font-semibold text-blue-900 mb-2">Delivery Fee Information</h3>
+                      <p className="text-blue-800 text-sm leading-relaxed">
+                        Delivery fees are calculated based on your location. 
+                        <strong className="block mt-1">Proceed to checkout to see your exact delivery fee and total amount.</strong>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="space-y-4 mb-6">
                   <div className="flex justify-between text-gray-600">
                     <span>Subtotal ({items.length} {items.length === 1 ? 'item' : 'items'})</span>
-                    <span className="font-semibold">₦{total.toLocaleString()}</span>
+                    <span className="font-semibold">₦{subtotal.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between text-gray-600">
                     <span>Delivery Fee</span>
-                    {shippingFee === 0 ? (
-                      <span className="text-emerald-600 font-bold">FREE</span>
-                    ) : (
-                      <span className="font-semibold">₦{shippingFee.toLocaleString()}</span>
-                    )}
+                    <span className="font-semibold text-emerald-600">
+                      Calculated at checkout
+                    </span>
                   </div>
-                  {total >= 5000 ? (
-                    <div className="bg-emerald-50 p-3 rounded-lg border border-emerald-200">
-                      <p className="text-emerald-700 text-sm font-semibold flex items-center gap-2">
-                        🎉 You've qualified for free shipping!
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="bg-orange-50 p-3 rounded-lg border border-orange-200">
-                      <p className="text-orange-700 text-sm font-semibold">
-                        Add ₦{(5000 - total).toLocaleString()} more for free shipping
-                      </p>
-                    </div>
-                  )}
                 </div>
 
                 <div className="border-t-2 border-gray-200 pt-4 mb-6">
                   <div className="flex justify-between items-baseline">
                     <span className="text-xl font-bold text-gray-900">Total</span>
-                    <span className="text-3xl font-bold text-emerald-600">₦{finalTotal.toLocaleString()}</span>
+                    <div className="text-right">
+                      <p className="text-lg text-gray-500 mb-1">From</p>
+                      <span className="text-3xl font-bold text-emerald-600">
+                        ₦{subtotal.toLocaleString()}
+                      </span>
+                    </div>
                   </div>
+                  <p className="text-xs text-gray-500 mt-2 text-right">
+                    + delivery fee (calculated at checkout)
+                  </p>
                 </div>
 
                 <Link
@@ -245,6 +249,17 @@ export default function CartPage() {
                   <ArrowLeft className="w-5 h-5" />
                   Continue Shopping
                 </Link>
+
+                {/* Delivery Info Preview */}
+                <div className="mt-6 p-4 bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl border border-emerald-200">
+                  <p className="text-xs font-semibold text-emerald-800 mb-2">Delivery Rates Guide:</p>
+                  <div className="text-xs text-emerald-700 space-y-1">
+                    <p>• Lagos: ₦10,000</p>
+                    <p>• Nearby States: ₦23,000</p>
+                    <p>• Other States: ₦27,000</p>
+                    <p className="text-emerald-600 font-medium mt-2">📍 Exact fee calculated at checkout</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

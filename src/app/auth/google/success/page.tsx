@@ -59,49 +59,49 @@ export default function GoogleAuthSuccessPage() {
   }, [searchParams, router, setUser])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-50 flex items-center justify-center px-4">
-      <div className="max-w-md w-full">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-50 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-md w-full mx-auto">
         {status === 'processing' && (
-          <div className="bg-white rounded-3xl shadow-2xl p-12 text-center border border-gray-100">
-            <div className="bg-blue-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
-              <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-lg sm:shadow-2xl p-6 sm:p-8 md:p-12 text-center border border-gray-100">
+            <div className="bg-blue-50 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 animate-pulse">
+              <Loader2 className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-blue-600 animate-spin" />
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">Signing you in</h2>
-            <p className="text-gray-600 text-lg">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">Signing you in</h2>
+            <p className="text-gray-600 text-base sm:text-lg">
               {message}
             </p>
-            <div className="flex items-center justify-center gap-2 mt-6">
-              <div className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-              <div className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-              <div className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+            <div className="flex items-center justify-center gap-2 mt-4 sm:mt-6">
+              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-emerald-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-emerald-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-emerald-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
             </div>
           </div>
         )}
 
         {status === 'success' && (
-          <div className="bg-white rounded-3xl shadow-2xl p-12 text-center border border-gray-100 animate-in zoom-in-95 duration-500">
-            <div className="bg-emerald-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="w-12 h-12 text-emerald-600" />
+          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-lg sm:shadow-2xl p-6 sm:p-8 md:p-12 text-center border border-gray-100 animate-in zoom-in-95 duration-500">
+            <div className="bg-emerald-50 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+              <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-emerald-600" />
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">Welcome! 🎉</h2>
-            <p className="text-gray-600 text-lg">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">Welcome! 🎉</h2>
+            <p className="text-gray-600 text-base sm:text-lg">
               {message}
             </p>
           </div>
         )}
 
         {status === 'error' && (
-          <div className="bg-white rounded-3xl shadow-2xl p-12 text-center border border-gray-100 animate-in zoom-in-95 duration-500">
-            <div className="bg-red-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
-              <XCircle className="w-12 h-12 text-red-600" />
+          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-lg sm:shadow-2xl p-6 sm:p-8 md:p-12 text-center border border-gray-100 animate-in zoom-in-95 duration-500">
+            <div className="bg-red-50 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+              <XCircle className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-red-600" />
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">Oops!</h2>
-            <p className="text-gray-600 text-lg mb-6">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">Oops!</h2>
+            <p className="text-gray-600 text-base sm:text-lg mb-4 sm:mb-6">
               {message}
             </p>
             <button
               onClick={() => router.push('/login')}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-6 py-3 rounded-xl font-semibold hover:from-emerald-700 hover:to-emerald-800 transition-all shadow-lg"
+              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-semibold text-sm sm:text-base hover:from-emerald-700 hover:to-emerald-800 transition-all shadow-lg w-full sm:w-auto"
             >
               Return to Login
             </button>

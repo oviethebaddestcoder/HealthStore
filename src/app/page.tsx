@@ -204,11 +204,11 @@ function StatsSection() {
   ]
 
   return (
-    <div className="py-16 bg-gray-50">
+    <div className="py-16 bg-gray-800">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Why Choose Health Excellence?</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <h2 className="text-3xl font-bold text-white mb-4">Why Choose Health Excellence?</h2>
+          <p className="text-white max-w-2xl mx-auto">
             Trusted by thousands of customers for our commitment to quality, authenticity, and exceptional service.
           </p>
         </div>
@@ -238,21 +238,21 @@ function TestimonialsSection() {
   const testimonials = [
     {
       id: 1,
-      name: "Sarah Johnson",
+      name: "Emeka Johnson",
       role: "Regular Customer",
       content: "The quality of products is exceptional! I've been using their immune boosters for 6 months and haven't been sick once.",
       rating: 5
     },
     {
       id: 2,
-      name: "Michael Chen",
+      name: "Michael Adeyemi",
       role: "Fitness Enthusiast",
       content: "Fast delivery and genuine products. Their wellness supplements have helped me maintain my fitness goals effectively.",
       rating: 5
     },
     {
       id: 3,
-      name: "Dr. Emily Davis",
+      name: "Dr. Musa Davis",
       role: "Nutritionist",
       content: "As a nutritionist, I recommend Health Excellence to my clients. Their products are pure and effective.",
       rating: 5

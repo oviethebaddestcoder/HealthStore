@@ -71,11 +71,7 @@ export default function Footer() {
                   Shipping
                 </Link>
               </li>
-              <li>
-                <Link href="/returns" className="text-gray-600 hover:text-green-600 transition-colors text-sm">
-                  Returns
-                </Link>
-              </li>
+            
             </ul>
           </div>
 
@@ -108,7 +104,7 @@ export default function Footer() {
               &copy; {new Date().getFullYear()} Health Excellence. All rights reserved.
             </p>
             <div className="flex items-center gap-6">
-              <Link href="/privacy" className="text-gray-500 hover:text-green-600 transition-colors text-sm">
+              <Link href="/terms" className="text-gray-500 hover:text-green-600 transition-colors text-sm">
                 Privacy
               </Link>
               <Link href="/terms" className="text-gray-500 hover:text-green-600 transition-colors text-sm">

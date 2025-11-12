@@ -1,0 +1,24 @@
+
+User-agent: *
+Allow: /
+
+# Disallow admin and API routes
+Disallow: /admin/
+Disallow: /api/
+Disallow: /cart
+Disallow: /checkout
+Disallow: /_next/
+
+# Allow images and CSS
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.png$
+Allow: /*.webp$
+Allow: /*.css$
+
+# Crawl-delay
+Crawl-delay: 1
+
+# Sitemap
+Sitemap: https://healthexcellence.shop/sitemap.xml
+

@@ -92,19 +92,18 @@ const handleSubmit = async (): Promise<void> => {
 
   setProcessing(true)
 
-  try {
-    const orderResponse = await createOrderMutation.mutateAsync({
-      address: {
-        street: formData.address,
-   
-      },
+  try {const orderResponse = await createOrderMutation.mutateAsync({
+      address: { street: formData.address },
       phone: formData.phone,
       discount_code: formData.discountCode || undefined,
       email: user.email,
-      state: formData.state, // Keep this if still required
+      state: formData.state,
       city: formData.city,
       payment_method: 'credit_card',
-      items: []
+      items: items.map((item) => ({
+        product_id: String(item.products?.id ?? item.id),
+        quantity: item.quantity,
+      })),
     })
 
     clearCart()
@@ -288,7 +287,7 @@ const handleSubmit = async (): Promise<void> => {
                   <Truck className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
                   <div className="text-sm">
                     <p className="font-medium text-green-800 mb-1">Delivery Information</p>
-                    <p className="text-green-700">Lagos: ₦3,500 • Nearby: ₦5,000 • Others: ₦6,000</p>
+                    <p className="text-green-700">Lagos: ₦10,000 • Nearby: ₦23,000 • Others: ₦27,000</p>
                     <p className="text-green-700">2-5 business days delivery</p>
                   </div>
                 </div>

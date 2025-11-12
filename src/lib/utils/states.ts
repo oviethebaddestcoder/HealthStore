@@ -10,22 +10,22 @@ export const nigerianStates = [
 const nearbyStates = ['Ogun', 'Oyo', 'Osun', 'Ondo', 'Ekiti', 'Edo']
 
 export const calculateDeliveryFee = (state: string): number => {
-  if (!state) return 5000 // Default fee if no state provided
+  if (!state) return 9000 // Default fee if no state provided
   
   const normalizedState = state.trim()
   
   // Lagos delivery - ₦3,500
   if (normalizedState.toLowerCase() === 'lagos') {
-    return 3500
+    return 10000
   }
   
   // Nearby states (South West) - ₦5,000
   if (nearbyStates.some(s => s.toLowerCase() === normalizedState.toLowerCase())) {
-    return 5000
+    return 23000
   }
   
   // Other states - ₦6,000
-  return 6000
+  return 27000
 }
 
 export const validateNigerianState = (state: string): boolean => {
