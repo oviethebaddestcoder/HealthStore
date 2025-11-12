@@ -49,9 +49,9 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
       setLoading(true)
       const data = await productsApi.getProduct(params.id)
       setProduct(data)
-      console.log('Product data:', data) // Debug log
+      
     } catch (err) {
-      console.error('Error fetching product:', err)
+      
       toast.error('Failed to load product')
     } finally {
       setLoading(false)
@@ -90,9 +90,9 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     try {
       setAdding(true)
       await addToCart(product.id, quantity)
-      toast.success('Added to cart successfully!')
+    
     } catch (error) {
-      console.error('Error adding to cart:', error)
+    
       toast.error('Failed to add item to cart')
     } finally {
       setAdding(false)
@@ -135,7 +135,6 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   }
 
   const imageUrl = getImageUrl(product.image_url)
-  console.log('Image URL:', { original: product.image_url, processed: imageUrl }) // Debug log
 
   return (
     <>
@@ -171,11 +170,11 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                         imageLoading ? 'opacity-0' : 'opacity-100'
                       }`}
                       onLoad={() => {
-                        console.log('Image loaded successfully')
+                        
                         setImageLoading(false)
                       }}
                       onError={(e) => {
-                        console.error('Image failed to load:', imageUrl)
+                        
                         setImageError(true)
                         setImageLoading(false)
                       }}

@@ -95,11 +95,11 @@ function HeroSection() {
     </div>
   )
 }
-
 function ProductCard({ product }: { product: Product }) {
   const [isLiked, setIsLiked] = useState(false)
   const [imageError, setImageError] = useState(false)
   const [addingToCart, setAddingToCart] = useState(false)
+  const [imageLoaded, setImageLoaded] = useState(false)
   const { addToCart } = useCartStore()
   const { isAuthenticated } = useAuthStore()
 
@@ -120,18 +120,38 @@ function ProductCard({ product }: { product: Product }) {
     }
   }
 
+  const handleImageLoad = () => {
+    setImageLoaded(true)
+  }
+
   return (
     <div className="bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow overflow-hidden group">
       <div className="relative h-48 bg-gray-50 overflow-hidden">
         {product.image_url && !imageError ? (
-          <Image
-            src={product.image_url}
-            alt={product.name}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
-            onError={() => setImageError(true)}
-            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
-          />
+          <>
+            {/* Low-quality placeholder */}
+            {!imageLoaded && (
+              <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
+                <ShoppingBag className="w-8 h-8 text-gray-400" />
+              </div>
+            )}
+            
+            {/* Lazy-loaded image */}
+            <Image
+              src={product.image_url}
+              alt={product.name}
+              fill
+              className={`object-cover group-hover:scale-105 transition-transform duration-300 ${
+                imageLoaded ? 'opacity-100' : 'opacity-0'
+              }`}
+              onError={() => setImageError(true)}
+              onLoad={handleImageLoad}
+              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
+              loading="lazy" // ✅ Native lazy loading
+              placeholder="blur" // ✅ Blur placeholder
+              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+            />
+          </>
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gray-100">
             <ShoppingBag className="w-12 h-12 text-gray-400" />

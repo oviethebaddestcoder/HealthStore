@@ -12,11 +12,46 @@ import Navbar from '@/src/components/layout/Navbar'
 import Footer from '@/src/components/layout/Footer'
 import { useRouter } from 'next/navigation'
 
+// Lazy Image Component for Cart
+const LazyCartImage = ({ 
+  src, 
+  alt, 
+  className = '',
+  onLoad,
+  onError 
+}: { 
+  src: string, 
+  alt: string, 
+  className?: string,
+  onLoad?: () => void,
+  onError?: () => void
+}) => {
+  return (
+    <Image
+      src={src || '/images/placeholder-product.jpg'}
+      alt={alt}
+      fill
+      className={className}
+      onLoad={onLoad}
+      onError={onError}
+      loading="lazy"
+      sizes="(max-width: 768px) 25vw, 20vw"
+      placeholder="blur"
+      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+    />
+  )
+}
+
 export default function CartPage() {
   const { items, loading, fetchCart, updateQuantity, removeItem, getCartTotal, clearCart } = useCartStore()
   const { isAuthenticated } = useAuthStore()
   const router = useRouter()
   const [selectedState, setSelectedState] = useState('')
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -28,7 +63,109 @@ export default function CartPage() {
 
   const subtotal = getCartTotal()
 
-  if (loading) {
+  // Cart Item Component with Lazy Loading
+  const CartItem = ({ item }: { item: any }) => {
+    const [imageError, setImageError] = useState(false)
+    const [imageLoading, setImageLoading] = useState(true)
+
+    return (
+      <div className="bg-white rounded-2xl shadow-lg p-6 border border-emerald-100 hover:shadow-xl transition-shadow">
+        <div className="flex gap-4">
+          {/* Image */}
+          <div className="relative w-24 h-24 sm:w-28 sm:h-28 bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl overflow-hidden flex-shrink-0">
+            {item.products?.image_url && !imageError ? (
+              <>
+                {imageLoading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
+                    <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
+                  </div>
+                )}
+                
+                <LazyCartImage
+                  src={item.products.image_url}
+                  alt={item.products.name}
+                  className={`object-cover ${
+                    imageLoading ? 'opacity-0' : 'opacity-100'
+                  }`}
+                  onLoad={() => setImageLoading(false)}
+                  onError={() => {
+                    setImageError(true)
+                    setImageLoading(false)
+                  }}
+                />
+              </>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <ShoppingBag className="w-12 h-12 text-emerald-300" />
+              </div>
+            )}
+          </div>
+
+          {/* Details */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between mb-2">
+              <div className="flex-1 min-w-0 pr-4">
+                <Link 
+                  href={`/products/${item.products?.id}`}
+                  className="font-bold text-lg text-gray-900 hover:text-emerald-600 transition-colors line-clamp-2"
+                >
+                  {item.products?.name}
+                </Link>
+                <p className="text-emerald-600 text-sm font-semibold mt-1">
+                  {item.products?.categories?.name}
+                </p>
+              </div>
+              <button
+                onClick={() => removeItem(item.id)}
+                className="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
+              >
+                <Trash2 className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between mt-4">
+              {/* Quantity Controls */}
+              <div className="flex items-center gap-2 bg-emerald-50 rounded-xl p-1">
+                <button
+                  onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                  className="w-8 h-8 flex items-center justify-center text-emerald-600 hover:bg-emerald-100 rounded-lg transition-colors"
+                >
+                  <Minus className="w-4 h-4" />
+                </button>
+                <span className="px-4 font-bold text-gray-900 min-w-[2rem] text-center">{item.quantity}</span>
+                <button
+                  onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                  disabled={item.quantity >= (item.products?.stock || 0)}
+                  className="w-8 h-8 flex items-center justify-center text-emerald-600 hover:bg-emerald-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Price */}
+              <div className="text-right">
+                <p className="text-sm text-gray-500">
+                  ₦{(item.products?.price || 0).toLocaleString()} each
+                </p>
+                <p className="text-xl font-bold text-emerald-600">
+                  ₦{((item.products?.price || 0) * item.quantity).toLocaleString()}
+                </p>
+              </div>
+            </div>
+
+            {item.quantity >= (item.products?.stock || 0) && (
+              <p className="text-xs text-orange-600 mt-2 font-medium">
+                Maximum available quantity reached
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Show loading state
+  if (!isClient || loading) {
     return (
       <>
         <Navbar />
@@ -103,84 +240,7 @@ export default function CartPage() {
             {/* Cart Items */}
             <div className="lg:col-span-2 space-y-4">
               {items.map((item) => (
-                <div key={item.id} className="bg-white rounded-2xl shadow-lg p-6 border border-emerald-100 hover:shadow-xl transition-shadow">
-                  <div className="flex gap-4">
-                    {/* Image */}
-                    <div className="relative w-24 h-24 sm:w-28 sm:h-28 bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl overflow-hidden flex-shrink-0">
-                      {item.products?.image_url ? (
-                        <Image
-                          src={item.products.image_url}
-                          alt={item.products.name}
-                          fill
-                          className="object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <ShoppingBag className="w-12 h-12 text-emerald-300" />
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Details */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex-1 min-w-0 pr-4">
-                          <Link 
-                            href={`/products/${item.products?.id}`}
-                            className="font-bold text-lg text-gray-900 hover:text-emerald-600 transition-colors line-clamp-2"
-                          >
-                            {item.products?.name}
-                          </Link>
-                          <p className="text-emerald-600 text-sm font-semibold mt-1">
-                            {item.products?.categories?.name}
-                          </p>
-                        </div>
-                        <button
-                          onClick={() => removeItem(item.id)}
-                          className="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </button>
-                      </div>
-
-                      <div className="flex items-center justify-between mt-4">
-                        {/* Quantity Controls */}
-                        <div className="flex items-center gap-2 bg-emerald-50 rounded-xl p-1">
-                          <button
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            className="w-8 h-8 flex items-center justify-center text-emerald-600 hover:bg-emerald-100 rounded-lg transition-colors"
-                          >
-                            <Minus className="w-4 h-4" />
-                          </button>
-                          <span className="px-4 font-bold text-gray-900 min-w-[2rem] text-center">{item.quantity}</span>
-                          <button
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            disabled={item.quantity >= (item.products?.stock || 0)}
-                            className="w-8 h-8 flex items-center justify-center text-emerald-600 hover:bg-emerald-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            <Plus className="w-4 h-4" />
-                          </button>
-                        </div>
-
-                        {/* Price */}
-                        <div className="text-right">
-                          <p className="text-sm text-gray-500">
-                            ₦{(item.products?.price || 0).toLocaleString()} each
-                          </p>
-                          <p className="text-xl font-bold text-emerald-600">
-                            ₦{((item.products?.price || 0) * item.quantity).toLocaleString()}
-                          </p>
-                        </div>
-                      </div>
-
-                      {item.quantity >= (item.products?.stock || 0) && (
-                        <p className="text-xs text-orange-600 mt-2 font-medium">
-                          Maximum available quantity reached
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
+                <CartItem key={item.id} item={item} />
               ))}
             </div>
 
@@ -265,7 +325,7 @@ export default function CartPage() {
           </div>
         </div>
       </main>
-      <Footer />
+  
     </>
   )
 }

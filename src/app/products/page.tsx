@@ -41,6 +41,36 @@ const categories = [
   { id: 'f8351765-5e42-4f74-9a11-539381c22cdb', name: 'Diabetes' }
 ]
 
+// Custom Lazy Image Component
+const LazyImage = ({ 
+  src, 
+  alt, 
+  className = '',
+  onLoad,
+  onError 
+}: { 
+  src: string, 
+  alt: string, 
+  className?: string,
+  onLoad?: () => void,
+  onError?: () => void
+}) => {
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      fill
+      className={className}
+      onLoad={onLoad}
+      onError={onError}
+      loading="lazy"
+      sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+      placeholder="blur"
+      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+    />
+  )
+}
+
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
@@ -66,11 +96,10 @@ export default function ProductsPage() {
         page,
         limit: 12
       })
-      console.log('Fetched products:', data.products)
+      
       setProducts(data.products || [])
       setTotalPages(data.pagination?.totalPages || 1)
     } catch (err) {
-      console.error('Error fetching products:', err)
       toast.error('Failed to load products')
     } finally {
       setLoading(false)
@@ -85,13 +114,12 @@ export default function ProductsPage() {
 
   // Function to handle image URLs properly
   const getImageUrl = (imageUrl: string) => {
-    if (!imageUrl) return null
+    if (!imageUrl) return '/images/placeholder-product.jpg'
     
     // If it's already a full URL, return as is
     if (imageUrl.startsWith('http')) return imageUrl
     
     // If it's a relative path, construct full URL
-    // Adjust the base URL according to your API
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
     return `${baseUrl}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`
   }
@@ -119,7 +147,7 @@ export default function ProductsPage() {
       try {
         setAdding(true)
         await addToCart(product.id, 1)
-        toast.success('Added to cart')
+        
       } catch (error) {
         toast.error('Failed to add item to cart')
       } finally {
@@ -138,7 +166,7 @@ export default function ProductsPage() {
         <Link href={`/products/${product.id}`} className="block flex-1 flex flex-col">
           {/* Image Container - Fixed Height */}
           <div className="relative h-64 bg-gray-50 rounded-t-lg overflow-hidden flex-shrink-0">
-            {imageUrl ? (
+            {!imageError ? (
               <>
                 {imageLoading && (
                   <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
@@ -146,37 +174,25 @@ export default function ProductsPage() {
                   </div>
                 )}
                 
-                {/* Image with fixed aspect ratio */}
-                <img
+                {/* Lazy-loaded Image */}
+                <LazyImage
                   src={imageUrl}
                   alt={product.name}
-                  className={`w-full h-full object-cover hover:scale-105 transition-transform duration-300 ${
+                  className={`object-cover hover:scale-105 transition-transform duration-300 ${
                     imageLoading ? 'opacity-0' : 'opacity-100'
                   }`}
-                  onLoad={() => {
-                    console.log('Image loaded successfully:', imageUrl)
-                    setImageLoading(false)
-                  }}
-                  onError={(e) => {
-                    console.error('Image failed to load:', imageUrl)
+                  onLoad={() => setImageLoading(false)}
+                  onError={() => {
                     setImageError(true)
                     setImageLoading(false)
                   }}
                 />
               </>
             ) : (
-              // Fallback when no image URL
+              // Fallback when image fails to load
               <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100 text-gray-400">
                 <ShoppingCart className="w-12 h-12 mb-2" />
                 <span className="text-xs">No Image</span>
-              </div>
-            )}
-            
-            {/* Fallback for image error */}
-            {imageError && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 text-gray-400">
-                <ShoppingCart className="w-12 h-12 mb-2" />
-                <span className="text-xs">Image Not Available</span>
               </div>
             )}
             
@@ -263,7 +279,7 @@ export default function ProductsPage() {
       try {
         setAdding(true)
         await addToCart(product.id, 1)
-        toast.success('Added to cart')
+        
       } catch (error) {
         toast.error('Failed to add item to cart')
       } finally {
@@ -279,7 +295,7 @@ export default function ProductsPage() {
           <Link href={`/products/${product.id}`} className="flex-shrink-0 relative group">
             {/* Fixed size image container for list view */}
             <div className="relative w-24 h-24 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0">
-              {imageUrl ? (
+              {!imageError ? (
                 <>
                   {imageLoading && (
                     <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
@@ -287,10 +303,10 @@ export default function ProductsPage() {
                     </div>
                   )}
                   
-                  <img
+                  <LazyImage
                     src={imageUrl}
                     alt={product.name}
-                    className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ${
+                    className={`object-cover group-hover:scale-105 transition-transform duration-300 ${
                       imageLoading ? 'opacity-0' : 'opacity-100'
                     }`}
                     onLoad={() => setImageLoading(false)}
@@ -307,14 +323,6 @@ export default function ProductsPage() {
                 </div>
               )}
               
-              {/* Fallback for image error */}
-              {imageError && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 text-gray-400">
-                  <ShoppingCart className="w-6 h-6 mb-1" />
-                  <span className="text-xs">No Image</span>
-                </div>
-              )}
-
               {/* View Details Overlay for List View */}
               {!imageLoading && !imageError && (
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100">
